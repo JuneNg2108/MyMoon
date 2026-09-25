@@ -3,12 +3,6 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="./support.js"></script>
-</head>
-<body>
-<x-dc>
-<helmet>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -25,146 +19,52 @@
   @keyframes pulseHint{0%,100%{opacity:.55;}50%{opacity:1;}}
   @keyframes sparkle{0%,100%{opacity:.2;transform:scale(.8);}50%{opacity:1;transform:scale(1.15);}}
 </style>
-</helmet>
+</head>
+<body>
+<body>
+<div id="app" style="position:relative;width:100%;height:100dvh;min-height:560px;overflow:hidden;background:linear-gradient(160deg,#100b30 0%,#241a4d 45%,#3a2860 100%);font-family:'Quicksand',sans-serif;user-select:none;">
+  <div id="stars"></div>
+  <div id="ambientMoon" hidden></div>
+  <button id="musicBtn" style="position:absolute;top:16px;right:16px;z-index:50;width:44px;height:44px;border-radius:50%;border:1.5px solid rgba(240,200,105,.55);background:rgba(16,11,48,.55);color:#f0c869;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(4px);">🔈</button>
 
-<div style="position:relative;width:100%;height:100dvh;min-height:560px;overflow:hidden;background:linear-gradient(160deg,#100b30 0%,#241a4d 45%,#3a2860 100%);font-family:'Quicksand',sans-serif;user-select:none;">
+  <div id="cover" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;cursor:pointer;padding:24px;text-align:center;animation:fadeIn .7s ease;">
+    <div id="coverMoon"></div>
+    <div style="font-family:'Playfair Display',serif;font-style:italic;color:#ffe9b8;font-size:clamp(24px,6vw,38px);text-shadow:0 3px 14px rgba(0,0,0,.5);">Chàng và Trăng</div>
+    <div style="color:#cdb9e6;font-size:clamp(13px,3vw,15px);letter-spacing:.5px;">một truyện cổ đêm rằm - dành cho nàng</div>
+    <div style="margin-top:10px;color:#e8d9c2;font-size:13px;animation:pulseHint 1.8s ease-in-out infinite;">Chạm để bắt đầu</div>
+  </div>
 
-  <sc-for list="{{ stars }}" as="s" hint-placeholder-count="0">
-    <div style="{{ s.style }}"></div>
-  </sc-for>
-
-  <sc-if value="{{ showAmbientMoon }}" hint-placeholder-val="{{ true }}">
-    <div style="{{ ambientMoonStyle }}"></div>
-  </sc-if>
-
-  <button onClick="{{ toggleMusic }}" style="position:absolute;top:16px;right:16px;z-index:50;width:44px;height:44px;border-radius:50%;border:1.5px solid rgba(240,200,105,.55);background:rgba(16,11,48,.55);color:#f0c869;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(4px);">{{ musicIcon }}</button>
-
-  <sc-if value="{{ showCover }}" hint-placeholder-val="{{ true }}">
-    <div onClick="{{ openBook }}" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;cursor:pointer;padding:24px;text-align:center;animation:fadeIn .7s ease;">
-      <div style="{{ coverMoonStyle }}"></div>
-      <div style="font-family:'Playfair Display',serif;font-style:italic;color:#ffe9b8;font-size:clamp(24px,6vw,38px);text-shadow:0 3px 14px rgba(0,0,0,.5);">Chàng và Trăng</div>
-      <div style="color:#cdb9e6;font-size:clamp(13px,3vw,15px);letter-spacing:.5px;">một truyện cổ đêm rằm - dành cho nàng</div>
-      <div style="margin-top:10px;color:#e8d9c2;font-size:13px;animation:pulseHint 1.8s ease-in-out infinite;">Chạm để bắt đầu</div>
+  <div id="book" style="position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px 14px;gap:14px;">
+    <div id="pageWrap">
+      <div id="illus" style="width:100%;height:min(34vh,220px);position:relative;display:flex;align-items:center;justify-content:center;"></div>
+      <div id="poem" style="font-family:'Playfair Display',serif;font-style:italic;color:#4a3363;font-size:clamp(15px,3.6vw,18px);line-height:1.85;text-align:center;padding:6px 8px 4px;"></div>
     </div>
-  </sc-if>
-
-  <sc-if value="{{ showBook }}" hint-placeholder-val="{{ false }}">
-    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 14px;gap:14px;">
-      <div
-        onPointerDown="{{ bookPointerDown }}"
-        onPointerUp="{{ bookPointerUp }}"
-        style="{{ pageWrapperStyle }}">
-        <div style="width:100%;height:min(34vh,220px);position:relative;display:flex;align-items:center;justify-content:center;">
-
-          <sc-if value="{{ isLonely }}" hint-placeholder-val="{{ false }}">
-            <div style="position:relative;width:100%;height:100%;display:flex;align-items:flex-end;justify-content:center;">
-              <div style="position:absolute;bottom:10px;width:70px;height:70px;border-radius:50% 50% 46% 46%;background:radial-gradient(circle at 35% 30%,#4a7a4f,#2c5230 75%);left:calc(50% - 90px);"></div>
-              <div style="position:absolute;bottom:66px;left:calc(50% - 60px);width:10px;height:44px;background:#5b3c28;border-radius:3px;"></div>
-              <div style="font-size:42px;">🧑</div>
-            </div>
-          </sc-if>
-
-          <sc-if value="{{ isGaze }}" hint-placeholder-val="{{ false }}">
-            <div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;gap:18px;">
-              <div style="{{ pageMoonBright }}"></div>
-              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-                <div style="font-size:15px;animation:sparkle 1.6s ease-in-out infinite;">✨</div>
-                <div style="font-size:42px;">🧑</div>
-              </div>
-            </div>
-          </sc-if>
-
-          <sc-if value="{{ isDim }}" hint-placeholder-val="{{ false }}">
-            <div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
-              <div style="{{ pageMoonDim }}"></div>
-              <div style="position:absolute;top:38%;left:30%;width:70px;height:26px;border-radius:50px;background:rgba(220,220,235,.35);animation:drift 6s ease-in-out infinite;"></div>
-              <div style="position:absolute;top:55%;left:52%;width:90px;height:30px;border-radius:50px;background:rgba(220,220,235,.3);animation:drift 7s ease-in-out infinite reverse;"></div>
-            </div>
-          </sc-if>
-
-          <sc-if value="{{ isClimb }}" hint-placeholder-val="{{ false }}">
-            <div style="position:relative;width:100%;height:100%;display:flex;align-items:flex-end;justify-content:center;">
-              <div style="{{ pageMoonMid }}position:absolute;top:6px;"></div>
-              <div style="position:absolute;bottom:0;left:50%;width:2px;height:78%;background:repeating-linear-gradient(to bottom,#e8d9c2 0 6px,transparent 6px 12px);"></div>
-              <div style="position:absolute;bottom:20px;font-size:36px;animation:climbUp 3s ease-in-out infinite;">🧑</div>
-              <div style="position:absolute;bottom:4px;left:calc(50% + 44px);font-size:24px;">🐇</div>
-            </div>
-          </sc-if>
-
-          <sc-if value="{{ isAloneMoon }}" hint-placeholder-val="{{ false }}">
-            <div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
-              <div style="{{ pageMoonPale }}display:flex;align-items:center;justify-content:center;">
-                <div style="font-size:34px;transform:translateY(4px);">🧑</div>
-              </div>
-            </div>
-          </sc-if>
-
-          <sc-if value="{{ isBrightUnion }}" hint-placeholder-val="{{ false }}">
-            <div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
-              <div style="{{ pageMoonBright }}display:flex;align-items:flex-end;justify-content:center;gap:2px;padding-bottom:10px;">
-                <div style="font-size:30px;">🧑</div>
-                <div style="font-size:30px;">👩</div>
-              </div>
-              <div style="position:absolute;top:14px;left:50%;transform:translateX(-50%);font-size:18px;animation:heartPop 1.6s ease-in-out infinite;">💛</div>
-            </div>
-          </sc-if>
-
-          <sc-if value="{{ isTransition }}" hint-placeholder-val="{{ false }}">
-            <div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
-              <div style="{{ pageMoonBright }}"></div>
-            </div>
-          </sc-if>
-
-        </div>
-
-        <div style="font-family:'Playfair Display',serif;font-style:italic;color:#4a3363;font-size:clamp(15px,3.6vw,18px);line-height:1.85;text-align:center;padding:6px 8px 4px;">
-          <sc-for list="{{ poemLines }}" as="line" hint-placeholder-count="4">
-            <div>{{ line }}</div>
-          </sc-for>
-        </div>
-      </div>
-
-      <div style="display:flex;align-items:center;gap:16px;">
-        <button onClick="{{ prevPage }}" disabled="{{ isFirstPage }}" style="{{ prevButtonStyle }}">‹</button>
-        <div style="color:#cdb9e6;font-size:13px;min-width:52px;text-align:center;">{{ pageIndicator }}</div>
-        <button onClick="{{ primaryNext }}" style="padding:11px 22px;border:none;border-radius:999px;background:linear-gradient(120deg,#e8b04b,#f0c869);color:#3a2350;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 8px 20px rgba(232,176,75,.35);">{{ primaryNextLabel }}</button>
-      </div>
+    <div style="display:flex;align-items:center;gap:16px;">
+      <button id="prevBtn">‹</button>
+      <div id="indicator" style="color:#cdb9e6;font-size:13px;min-width:52px;text-align:center;"></div>
+      <button id="nextBtn" style="padding:11px 22px;border:none;border-radius:999px;background:linear-gradient(120deg,#e8b04b,#f0c869);color:#3a2350;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 8px 20px rgba(232,176,75,.35);"></button>
     </div>
-  </sc-if>
+  </div>
 
-  <sc-if value="{{ showQuestion }}" hint-placeholder-val="{{ false }}">
-    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;padding:24px;animation:fadeIn .5s ease;">
-      <div style="{{ questionMoonStyle }}display:flex;align-items:center;justify-content:center;">
-        <div style="font-size:34px;color:#3a2350;">月</div>
-      </div>
-      <div style="font-family:'Playfair Display',serif;color:#ffe6a6;font-size:clamp(19px,4.4vw,25px);text-align:center;max-width:440px;line-height:1.55;text-shadow:0 2px 10px rgba(0,0,0,.4);">Liệu chị có thể trở thành 月 của em không?</div>
-      <div style="position:relative;height:180px;width:min(92vw,380px);">
-        <button onClick="{{ answerYes }}" style="position:absolute;left:50%;bottom:8px;transform:translateX(-50%);padding:14px 30px;border:none;border-radius:999px;background:linear-gradient(120deg,#e8b04b,#f0c869);color:#3a2350;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 8px 22px rgba(232,176,75,.4);z-index:2;white-space:nowrap;">Có ạ 🌕</button>
-        <button onPointerEnter="{{ dodgeNo }}" onClick="{{ dodgeNo }}" style="{{ noButtonStyle }}">{{ noCaption }}</button>
-      </div>
+  <div id="question" style="position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:28px;padding:24px;animation:fadeIn .5s ease;">
+    <div id="questionMoon" style="display:flex;align-items:center;justify-content:center;"><div style="font-size:34px;color:#3a2350;">月</div></div>
+    <div style="font-family:'Playfair Display',serif;color:#ffe6a6;font-size:clamp(19px,4.4vw,25px);text-align:center;max-width:440px;line-height:1.55;text-shadow:0 2px 10px rgba(0,0,0,.4);">Liệu chị có thể trở thành 月 của em không?</div>
+    <div style="position:relative;height:180px;width:min(92vw,380px);">
+      <button id="yesBtn" style="position:absolute;left:50%;bottom:8px;transform:translateX(-50%);padding:14px 30px;border:none;border-radius:999px;background:linear-gradient(120deg,#e8b04b,#f0c869);color:#3a2350;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 8px 22px rgba(232,176,75,.4);z-index:2;white-space:nowrap;">Có ạ 🌕</button>
+      <button id="noBtn"></button>
     </div>
-  </sc-if>
+  </div>
 
-  <sc-if value="{{ showYes }}" hint-placeholder-val="{{ false }}">
-    <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;text-align:center;animation:fadeIn .6s ease;overflow:hidden;">
-      <sc-for list="{{ hearts }}" as="h" hint-placeholder-count="0">
-        <div style="{{ h.style }}">🌕</div>
-      </sc-for>
-      <div style="{{ finalMoonStyle }}display:flex;align-items:flex-end;justify-content:center;gap:2px;padding-bottom:12px;">
-        <div style="font-size:32px;">🧑</div>
-        <div style="font-size:32px;">👩</div>
-      </div>
-      <div style="font-family:'Playfair Display',serif;color:#ffe6a6;font-size:clamp(20px,4.5vw,28px);max-width:440px;text-shadow:0 2px 10px rgba(0,0,0,.4);">Trăng và chàng thi sĩ, cuối cùng cũng đã tìm thấy nhau.</div>
-      <div style="color:#e8d9c2;font-size:15px;">Chúc Linh một mùa Trung Thu tràn ngập ánh trăng và hạnh phúc — Dũng 🌙</div>
-    </div>
-  </sc-if>
-
+  <div id="yes" style="position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;text-align:center;animation:fadeIn .6s ease;overflow:hidden;">
+    <div id="hearts"></div>
+    <div id="finalMoon" style="display:flex;align-items:flex-end;justify-content:center;gap:2px;padding-bottom:12px;"><div style="font-size:32px;">🧑</div><div style="font-size:32px;">👩</div></div>
+    <div style="font-family:'Playfair Display',serif;color:#ffe6a6;font-size:clamp(20px,4.5vw,28px);max-width:440px;text-shadow:0 2px 10px rgba(0,0,0,.4);">Trăng và chàng thi sĩ, cuối cùng cũng đã tìm thấy nhau.</div>
+    <div style="color:#e8d9c2;font-size:15px;">Mong mãi được ở cạnh chị như đêm nay 🌙</div>
+  </div>
 </div>
-
-</x-dc>
-<script type="text/x-dc" data-dc-script>
-class Component extends DCLogic {
-  pages = [
+<script>
+(() => {
+  const pages = [
     { poem: 'Có chàng thi sĩ sống đơn,\nNgày qua tháng lại chẳng hờn chẳng than.\nRiêng mình giữa chốn nhân gian,\nChỉ mong đến hội trăng vàng mỗi năm.', illustration: 'lonely' },
     { poem: 'Đêm đêm chàng ngước lên trời,\nKể cùng ánh trăng đôi lời chưa nguôi.\nTrăng nghe, trăng vẫn mỉm cười,\nDõi theo bước chàng suốt những đêm dài.', illustration: 'gaze' },
     { poem: 'Trung thu năm ấy lạ thay,\nTrăng không còn sáng như ngày xa xưa.\nĐêm rằm mây xám giăng mờ,\nLòng chàng se lại, ngẩn ngơ trông vời.', illustration: 'dim' },
@@ -173,47 +73,11 @@ class Component extends DCLogic {
     { poem: 'Trăng chợt bừng sáng đêm rằm,\nNhư duyên tiền định trời đem lại gần.\nTừ nay chẳng còn xa xăm,\nTrăng ở cùng mãi cùng chàng đêm nay', illustration: 'brightUnion' },
     { poem: 'Đêm nay dưới ánh trăng này,\nChàng mong tấm lòng tỏ bày cùng nàng.', illustration: 'transition' },
   ];
+  const noCaptions = ['Không...', 'Suy nghĩ lại đi~', 'Chị chắc không đó?', 'Đừng mà 🥺', 'Thử bắt em nè!', 'Trốn nè 😝'];
+  const $ = (id) => document.getElementById(id);
+  const st = { page: 0, busy: false, noCap: 0, swipeX: null };
 
-  noCaptions = ['Không...', 'Suy nghĩ lại đi~', 'Chị chắc không đó?', 'Đừng mà 🥺', 'Thử bắt em nè!', 'Trốn nè 😝'];
-
-  state = {
-    stage: 'cover',
-    page: 0,
-    transitionPhase: 'idle',
-    flipDir: 1,
-    musicOn: false,
-    stars: [],
-    hearts: [],
-    noPos: { x: 62, y: 40 },
-    noCapIndex: 0,
-    swipeStartX: null,
-  };
-
-  componentDidMount() {
-    const stars = [];
-    for (let i = 0; i < 44; i++) {
-      const left = Math.random() * 100;
-      const top = Math.random() * 55;
-      const size = 1.5 + Math.random() * 2;
-      const delay = Math.random() * 3;
-      stars.push({
-        id: i,
-        style: `position:absolute;left:${left}%;top:${top}%;width:${size}px;height:${size}px;border-radius:50%;background:#fff;animation:twinkle ${2 + Math.random() * 2}s ease-in-out infinite;animation-delay:${delay}s;`,
-      });
-    }
-    this.setState({ stars });
-    this.startMusic();
-  }
-
-  componentWillUnmount() {
-    if (this._audio) this._audio.pause();
-    if (this._removeUnlock) this._removeUnlock();
-    document.removeEventListener('visibilitychange', this._onVisible);
-    window.removeEventListener('pageshow', this._onVisible);
-    if (this._noJitter) clearInterval(this._noJitter);
-  }
-
-  buildMoon(size, mode) {
+  function buildMoon(size, mode) {
     const glow = mode === 'bright' ? '0 0 46px rgba(240,205,120,.65), 0 0 90px rgba(240,205,120,.35)'
       : mode === 'mid' ? '0 0 20px rgba(200,185,150,.35)'
       : '0 0 10px rgba(140,135,150,.2)';
@@ -229,193 +93,197 @@ class Component extends DCLogic {
       `box-shadow:${glow};filter:${filter};transition:filter 1s ease, box-shadow 1s ease;`;
   }
 
-  openBook = () => this.setState({ stage: 'book' });
+  const moons = () => ({
+    pageMoonBright: buildMoon(100, 'bright'),
+    pageMoonMid: buildMoon(90, 'mid'),
+    pageMoonDim: buildMoon(100, 'dim'),
+    pageMoonPale: buildMoon(110, 'dim'),
+  });
+  const illustrations = {
+    lonely: (moon) => `            <div style="position:relative;width:100%;height:100%;display:flex;align-items:flex-end;justify-content:center;">
+              <div style="position:absolute;bottom:10px;width:70px;height:70px;border-radius:50% 50% 46% 46%;background:radial-gradient(circle at 35% 30%,#4a7a4f,#2c5230 75%);left:calc(50% - 90px);"></div>
+              <div style="position:absolute;bottom:66px;left:calc(50% - 60px);width:10px;height:44px;background:#5b3c28;border-radius:3px;"></div>
+              <div style="font-size:42px;">🧑</div>
+            </div>`,
+    gaze: (moon) => `            <div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;gap:18px;">
+              <div style="${moon.pageMoonBright}"></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+                <div style="font-size:15px;animation:sparkle 1.6s ease-in-out infinite;">✨</div>
+                <div style="font-size:42px;">🧑</div>
+              </div>
+            </div>`,
+    dim: (moon) => `            <div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
+              <div style="${moon.pageMoonDim}"></div>
+              <div style="position:absolute;top:38%;left:30%;width:70px;height:26px;border-radius:50px;background:rgba(220,220,235,.35);animation:drift 6s ease-in-out infinite;"></div>
+              <div style="position:absolute;top:55%;left:52%;width:90px;height:30px;border-radius:50px;background:rgba(220,220,235,.3);animation:drift 7s ease-in-out infinite reverse;"></div>
+            </div>`,
+    climb: (moon) => `            <div style="position:relative;width:100%;height:100%;display:flex;align-items:flex-end;justify-content:center;">
+              <div style="${moon.pageMoonMid}position:absolute;top:6px;"></div>
+              <div style="position:absolute;bottom:0;left:50%;width:2px;height:78%;background:repeating-linear-gradient(to bottom,#e8d9c2 0 6px,transparent 6px 12px);"></div>
+              <div style="position:absolute;bottom:20px;font-size:36px;animation:climbUp 3s ease-in-out infinite;">🧑</div>
+              <div style="position:absolute;bottom:4px;left:calc(50% + 44px);font-size:24px;">🐇</div>
+            </div>`,
+    aloneMoon: (moon) => `            <div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
+              <div style="${moon.pageMoonPale}display:flex;align-items:center;justify-content:center;">
+                <div style="font-size:34px;transform:translateY(4px);">🧑</div>
+              </div>
+            </div>`,
+    brightUnion: (moon) => `            <div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
+              <div style="${moon.pageMoonBright}display:flex;align-items:flex-end;justify-content:center;gap:2px;padding-bottom:10px;">
+                <div style="font-size:30px;">🧑</div>
+                <div style="font-size:30px;">👩</div>
+              </div>
+              <div style="position:absolute;top:14px;left:50%;transform:translateX(-50%);font-size:18px;animation:heartPop 1.6s ease-in-out infinite;">💛</div>
+            </div>`,
+    transition: (moon) => `            <div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
+              <div style="${moon.pageMoonBright}"></div>
+            </div>`
+  };
 
-  goToPage(next, dir) {
-    if (this.state.transitionPhase !== 'idle') return;
-    this.setState({ transitionPhase: 'leaving', flipDir: dir });
+  // ---------- static setup ----------
+  for (let i = 0; i < 44; i++) {
+    const d = document.createElement('div');
+    const size = 1.5 + Math.random() * 2;
+    d.style.cssText = `position:absolute;left:${Math.random() * 100}%;top:${Math.random() * 55}%;width:${size}px;height:${size}px;border-radius:50%;background:#fff;animation:twinkle ${2 + Math.random() * 2}s ease-in-out infinite;animation-delay:${Math.random() * 3}s;`;
+    $('stars').appendChild(d);
+  }
+  $('ambientMoon').style.cssText = `position:absolute;top:5%;left:50%;transform:translateX(-50%);${buildMoon(70, 'bright')}opacity:.9;`;
+  $('coverMoon').style.cssText = buildMoon(150, 'bright');
+  $('questionMoon').style.cssText += buildMoon(120, 'bright');
+  $('finalMoon').style.cssText += buildMoon(150, 'bright');
+
+  // ---------- stages ----------
+  function showStage(name) {
+    ['cover', 'book', 'question', 'yes'].forEach((id) => {
+      $(id).style.display = id === name ? 'flex' : 'none';
+    });
+    $('ambientMoon').hidden = name !== 'book';
+  }
+
+  function pageStyle(phase, dir) {
+    let s = 'width:min(94vw,440px);background:#fbf1de;border-radius:14px;box-shadow:0 20px 50px rgba(0,0,0,.4);padding:18px 16px 14px;position:relative;touch-action:pan-y;';
+    if (phase === 'leaving') s += `transform:rotateY(${dir * -14}deg) scale(.96);opacity:0;transition:transform .26s ease, opacity .26s ease;`;
+    else if (phase === 'entering') s += `transform:rotateY(${dir * 14}deg) scale(.96);opacity:0;transition:none;`;
+    else s += 'transform:rotateY(0deg) scale(1);opacity:1;transition:transform .3s ease, opacity .3s ease;';
+    return s;
+  }
+
+  function renderPage() {
+    const p = pages[st.page];
+    $('illus').innerHTML = illustrations[p.illustration](moons());
+    $('poem').innerHTML = p.poem.split('\n').map((l) => `<div>${l}</div>`).join('');
+    $('indicator').textContent = `${st.page + 1} / ${pages.length}`;
+    $('nextBtn').textContent = st.page >= pages.length - 1 ? 'Hỏi thật lòng →' : '›';
+    const first = st.page === 0;
+    $('prevBtn').disabled = first;
+    $('prevBtn').style.cssText = `width:38px;height:38px;border-radius:50%;border:1.5px solid rgba(240,200,105,.4);background:rgba(255,255,255,.06);color:${first ? 'rgba(240,200,105,.25)' : '#f0c869'};font-size:18px;cursor:${first ? 'default' : 'pointer'};display:flex;align-items:center;justify-content:center;`;
+  }
+
+  function goToPage(next, dir) {
+    if (st.busy) return;
+    st.busy = true;
+    $('pageWrap').style.cssText = pageStyle('leaving', dir);
     setTimeout(() => {
-      this.setState({ page: next, transitionPhase: 'entering' });
-      requestAnimationFrame(() => requestAnimationFrame(() => this.setState({ transitionPhase: 'idle' })));
+      st.page = next;
+      renderPage();
+      $('pageWrap').style.cssText = pageStyle('entering', dir);
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        $('pageWrap').style.cssText = pageStyle('idle', dir);
+        st.busy = false;
+      }));
     }, 260);
   }
+  const nextPage = () => { if (st.page < pages.length - 1) goToPage(st.page + 1, 1); };
+  const prevPage = () => { if (st.page > 0) goToPage(st.page - 1, -1); };
+  const primaryNext = () => (st.page >= pages.length - 1 ? goQuestion() : nextPage());
 
-  nextPage = () => {
-    if (this.state.page < this.pages.length - 1) this.goToPage(this.state.page + 1, 1);
-  };
-  prevPage = () => {
-    if (this.state.page > 0) this.goToPage(this.state.page - 1, -1);
-  };
-  primaryNext = () => {
-    if (this.state.page >= this.pages.length - 1) this.goQuestion();
-    else this.nextPage();
-  };
-  randomNoPos() {
-    return { x: 12 + Math.random() * 76, y: 5 + Math.random() * 48 };
+  // ---------- question ----------
+  let jitter = null;
+  function moveNo() {
+    const x = 12 + Math.random() * 76;
+    const y = 5 + Math.random() * 48;
+    st.noCap = (st.noCap + 1) % noCaptions.length;
+    $('noBtn').style.cssText = `position:absolute;left:${x}%;top:${y}%;transform:translate(-50%,-50%);padding:14px 22px;border:1.5px solid rgba(255,255,255,.4);border-radius:999px;background:rgba(255,255,255,.08);color:#ffe6a6;font-weight:600;font-size:13px;cursor:pointer;transition:left .35s ease, top .35s ease;white-space:nowrap;z-index:1;`;
+    $('noBtn').textContent = noCaptions[st.noCap];
   }
-
-  goQuestion = () => {
-    this.setState({ stage: 'question', noPos: this.randomNoPos() });
-    this._noJitter = setInterval(() => {
-      this.setState({
-        noPos: this.randomNoPos(),
-        noCapIndex: (this.state.noCapIndex + 1) % this.noCaptions.length,
-      });
-    }, 900);
-  };
-
-  bookPointerDown = (e) => { this.setState({ swipeStartX: e.clientX }); };
-  bookPointerUp = (e) => {
-    const start = this.state.swipeStartX;
-    if (start == null) return;
-    const delta = e.clientX - start;
-    this.setState({ swipeStartX: null });
-    if (delta < -45) this.primaryNext();
-    else if (delta > 45) this.prevPage();
-  };
-
-  dodgeNo = () => {
-    if (this._noJitter) clearInterval(this._noJitter);
-    this.setState({
-      noPos: this.randomNoPos(),
-      noCapIndex: (this.state.noCapIndex + 1) % this.noCaptions.length,
-    });
-    this._noJitter = setInterval(() => {
-      this.setState({
-        noPos: this.randomNoPos(),
-        noCapIndex: (this.state.noCapIndex + 1) % this.noCaptions.length,
-      });
-    }, 900);
-  };
-
-  answerYes = () => {
-    if (this._noJitter) clearInterval(this._noJitter);
-    const hearts = [];
+  function startJitter() {
+    clearInterval(jitter);
+    jitter = setInterval(moveNo, 900);
+  }
+  function goQuestion() {
+    showStage('question');
+    moveNo();
+    startJitter();
+  }
+  function answerYes() {
+    clearInterval(jitter);
+    const box = $('hearts');
+    box.innerHTML = '';
     for (let i = 0; i < 16; i++) {
-      const left = Math.random() * 100;
-      const delay = Math.random() * 2.5;
-      const dur = 4 + Math.random() * 3;
-      const size = 14 + Math.random() * 16;
-      hearts.push({
-        id: i,
-        style: `position:absolute;left:${left}%;top:-8%;font-size:${size}px;animation:fall ${dur}s linear infinite;animation-delay:${delay}s;pointer-events:none;`,
-      });
+      const h = document.createElement('div');
+      h.textContent = '🌕';
+      h.style.cssText = `position:absolute;left:${Math.random() * 100}%;top:-8%;font-size:${14 + Math.random() * 16}px;animation:fall ${4 + Math.random() * 3}s linear infinite;animation-delay:${Math.random() * 2.5}s;pointer-events:none;`;
+      box.appendChild(h);
     }
-    this.setState({ stage: 'yes', hearts });
-  };
-
-  startMusic() {
-    const audio = this._audio = new Audio('./bgMoon.mp3');
-    audio.loop = true;
-    audio.preload = 'auto';
-    audio.volume = 0.6;
-    const sync = () => this.setState({ musicOn: !audio.paused && !audio.muted });
-    audio.addEventListener('play', sync);
-    audio.addEventListener('pause', sync);
-    audio.addEventListener('volumechange', sync);
-
-    const events = ['pointerdown', 'touchend', 'click', 'keydown', 'wheel'];
-    const unlock = () => {
-      if (this._userMuted) return;
-      audio.muted = false;
-      const p = audio.play();
-      if (p && p.then) p.then(removeUnlock).catch(() => {});
-      else removeUnlock();
-    };
-    const removeUnlock = () => events.forEach(e => window.removeEventListener(e, unlock, true));
-    events.forEach(e => window.addEventListener(e, unlock, true));
-
-    // Try audible autoplay; if the browser blocks it, play muted (always allowed)
-    // and unmute on the first user gesture.
-    audio.play().then(removeUnlock).catch(() => {
-      audio.muted = true;
-      audio.play().catch(() => {});
-    });
-
-    // Resume when the tab returns to the foreground or the OS interrupts playback.
-    this._onVisible = () => {
-      if (!document.hidden && !this._userMuted && audio.paused) audio.play().catch(() => {});
-    };
-    document.addEventListener('visibilitychange', this._onVisible);
-    window.addEventListener('pageshow', this._onVisible);
-    this._removeUnlock = removeUnlock;
+    showStage('yes');
   }
 
-  toggleMusic = () => {
-    const audio = this._audio;
-    if (!audio) return;
-    if (!audio.paused && !audio.muted) {
-      this._userMuted = true;
-      audio.pause();
-    } else {
-      this._userMuted = false;
-      audio.muted = false;
-      audio.play().catch(() => {});
-    }
+  // ---------- wiring ----------
+  $('cover').onclick = () => {
+    showStage('book');
+    renderPage();
+    $('pageWrap').style.cssText = pageStyle('idle', 1);
+  };
+  $('prevBtn').onclick = prevPage;
+  $('nextBtn').onclick = primaryNext;
+  $('yesBtn').onclick = answerYes;
+  $('noBtn').onpointerenter = () => { moveNo(); startJitter(); };
+  $('noBtn').onclick = () => { moveNo(); startJitter(); };
+  $('pageWrap').onpointerdown = (e) => { st.swipeX = e.clientX; };
+  $('pageWrap').onpointerup = (e) => {
+    if (st.swipeX == null) return;
+    const d = e.clientX - st.swipeX;
+    st.swipeX = null;
+    if (d < -45) primaryNext(); else if (d > 45) prevPage();
   };
 
-  renderVals() {
-    const s = this.state;
-    const current = this.pages[s.page];
-    const illus = current.illustration;
+  // ---------- background music ----------
+  const audio = new Audio('./bgMoon.mp3');
+  audio.loop = true;
+  audio.preload = 'auto';
+  audio.volume = 0.6;
+  let userMuted = false;
+  const syncIcon = () => { $('musicBtn').textContent = !audio.paused && !audio.muted ? '🔊' : '🔈'; };
+  ['play', 'pause', 'volumechange'].forEach((e) => audio.addEventListener(e, syncIcon));
 
-    const dir = s.flipDir;
-    let pageWrapperStyle = 'width:min(94vw,440px);background:#fbf1de;border-radius:14px;box-shadow:0 20px 50px rgba(0,0,0,.4);padding:18px 16px 14px;position:relative;touch-action:pan-y;';
-    if (s.transitionPhase === 'leaving') {
-      pageWrapperStyle += `transform:rotateY(${dir * -14}deg) scale(.96);opacity:0;transition:transform .26s ease, opacity .26s ease;`;
-    } else if (s.transitionPhase === 'entering') {
-      pageWrapperStyle += `transform:rotateY(${dir * 14}deg) scale(.96);opacity:0;transition:none;`;
-    } else {
-      pageWrapperStyle += `transform:rotateY(0deg) scale(1);opacity:1;transition:transform .3s ease, opacity .3s ease;`;
-    }
-
-    const noScale = 1;
-    const noButtonStyle = `position:absolute;left:${s.noPos.x}%;top:${s.noPos.y}%;transform:translate(-50%,-50%);padding:14px 22px;border:1.5px solid rgba(255,255,255,.4);border-radius:999px;background:rgba(255,255,255,.08);color:#ffe6a6;font-weight:600;font-size:13px;cursor:pointer;transition:left .35s ease, top .35s ease;white-space:nowrap;z-index:1;`;
-
-    return {
-      showCover: s.stage === 'cover',
-      showBook: s.stage === 'book',
-      showQuestion: s.stage === 'question',
-      showYes: s.stage === 'yes',
-      showAmbientMoon: s.stage === 'book',
-      stars: s.stars,
-      hearts: s.hearts,
-      ambientMoonStyle: `position:absolute;top:5%;left:50%;transform:translateX(-50%);${this.buildMoon(70, 'bright')}opacity:.9;`,
-      coverMoonStyle: `${this.buildMoon(150, 'bright')}`,
-      questionMoonStyle: `${this.buildMoon(120, 'bright')}`,
-      finalMoonStyle: `${this.buildMoon(150, 'bright')}`,
-      pageMoonBright: this.buildMoon(100, 'bright'),
-      pageMoonMid: this.buildMoon(90, 'mid'),
-      pageMoonDim: this.buildMoon(100, 'dim'),
-      pageMoonPale: this.buildMoon(110, 'dim'),
-      isLonely: illus === 'lonely',
-      isGaze: illus === 'gaze',
-      isDim: illus === 'dim',
-      isClimb: illus === 'climb',
-      isAloneMoon: illus === 'aloneMoon',
-      isBrightUnion: illus === 'brightUnion',
-      isTransition: illus === 'transition',
-      poemLines: current.poem.split('\n'),
-      pageWrapperStyle,
-      isFirstPage: s.page === 0,
-      prevButtonStyle: `width:38px;height:38px;border-radius:50%;border:1.5px solid rgba(240,200,105,.4);background:rgba(255,255,255,.06);color:${s.page === 0 ? 'rgba(240,200,105,.25)' : '#f0c869'};font-size:18px;cursor:${s.page === 0 ? 'default' : 'pointer'};display:flex;align-items:center;justify-content:center;`,
-      pageIndicator: `${s.page + 1} / ${this.pages.length}`,
-      primaryNextLabel: s.page >= this.pages.length - 1 ? 'Hỏi thật lòng →' : '›',
-      noButtonStyle,
-      noCaption: this.noCaptions[s.noCapIndex],
-      musicIcon: s.musicOn ? '🔊' : '🔈',
-      openBook: this.openBook,
-      nextPage: this.nextPage,
-      prevPage: this.prevPage,
-      primaryNext: this.primaryNext,
-      bookPointerDown: this.bookPointerDown,
-      bookPointerUp: this.bookPointerUp,
-      dodgeNo: this.dodgeNo,
-      answerYes: this.answerYes,
-      toggleMusic: this.toggleMusic,
-    };
+  const gestures = ['pointerdown', 'touchend', 'click', 'keydown', 'wheel'];
+  const removeUnlock = () => gestures.forEach((e) => window.removeEventListener(e, unlock, true));
+  function unlock(ev) {
+    if (userMuted || (ev.target && ev.target.id === 'musicBtn')) return;
+    audio.muted = false;
+    const p = audio.play();
+    if (p && p.then) p.then(removeUnlock).catch(() => {});
+    else removeUnlock();
   }
-}
+  gestures.forEach((e) => window.addEventListener(e, unlock, true));
+
+  // Try audible autoplay; if blocked, play muted (always allowed) and unmute on first gesture.
+  audio.play().then(removeUnlock).catch(() => {
+    audio.muted = true;
+    audio.play().catch(() => {});
+  });
+
+  const resume = () => { if (!document.hidden && !userMuted && audio.paused) audio.play().catch(() => {}); };
+  document.addEventListener('visibilitychange', resume);
+  window.addEventListener('pageshow', resume);
+
+  $('musicBtn').onclick = () => {
+    if (!audio.paused && !audio.muted) { userMuted = true; audio.pause(); }
+    else { userMuted = false; audio.muted = false; audio.play().catch(() => {}); }
+  };
+
+  showStage('cover');
+})();
 </script>
 </body>
 </html>
